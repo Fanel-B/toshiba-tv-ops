@@ -1,0 +1,6 @@
+{
+  "tv": "Toshiba 50UA2363DG (Vestel BODRUM, finch, MediaTek/MStar m7332), France",
+  "os": "Android TV 11",
+  "brand": "Toshiba",
+  "notes": "Second Vestel board, not Cosmos170: vestelreporter telemetry, retail demo, SystemSpeedUp cleaner, the eIB on-screen manual, Google recommendation rows/feedback/RLZ, DVB-T scan wizard; voice off by choice (no mic on the panel); Chromecast, Google TV Remote, USB player, OTA and remote-firmware updates kept; 1.4 GB low-RAM, 32-bit only; Live TV is `com.mediatek.wwtv.tvcenter`; `set-home-activity` is a no-op until the stock launcher is disabled; `dumpsys` wedges on long uptimes and a reboot clears it"
+}

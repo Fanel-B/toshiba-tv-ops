@@ -1,0 +1,74 @@
+# Toshiba 50UA2363DG (Vestel BODRUM, device finch, MediaTek/MStar m7332), Android TV 11,
+# firmware RTM6.230109.207 — France-market unit.
+# Fingerprint: Toshiba/BODRUM_Toshiba/finch:11/RTM6.230109.207/10391326:user/release-keys
+# ro.product.odm.manufacturer=vestel  ro.product.board=BODRUM  ro.product.device=finch
+# SDK 30, armeabi-v7a (32-bit only), ro.config.low_ram=true (~1.4 GB), build date 2023-06-27.
+#
+# NOT TESTED FOR SEVERAL DAYS YET. This list was applied and verified in a single session
+# (2026-10-27). CONTRIBUTING.md asks for a few days of living with it before a pull request;
+# treat this as a day-0 list until then.
+#
+# Match on the Vestel BODRUM/finch fingerprint, not on the Toshiba badge. Vestel ships this
+# firmware across several European badge brands. This is NOT the Vestel Cosmos170/yeoksam board
+# (examples/toshiba-cosmos-android-tv): different board, different package set — that list does
+# not apply here, and this one does not apply there. A Toshiba Fire TV
+# (examples/toshiba-fire-tv-aftha004) is a different platform again.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/toshiba-50ua2363dg-bodrum/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/toshiba-50ua2363dg-bodrum/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (pass it to restore.sh, as above).
+# Live TV app:    com.mediatek.wwtv.tvcenter — NEVER disable it.
+# Keep also: com.vestel.tv.service, com.vestel.tv.backlight, com.vestel.tv.keycontroller (hardware),
+# com.vestel.tv.rcupdater (remote firmware updates — owner keeps updates),
+# com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.autopair (tuner/HDMI/remote pairing),
+# com.mediatek.android.tv.mdns.offload (Chromecast discovery while the TV is in standby),
+# com.google.android.apps.mediashell (Chromecast built-in — owner casts from a phone),
+# com.google.android.tv.remote.service (Google TV Remote v2),
+# com.mediatek.wwtv.mediaplayer (USB media player).
+#
+# QUIRKS ON THIS FIRMWARE:
+# - `cmd package set-home-activity` prints Success and changes nothing while the stock launcher is
+#   still enabled: Home keeps resolving to com.google.android.tvlauncher. Install the new launcher,
+#   confirm it starts, then disable the stock launcher — launcher/build-and-install.sh does this in
+#   the right order and rolls Home back if it fails.
+# - `dumpsys` can wedge on long uptimes ("Service dumps disabled due to hung system process"), which
+#   silently disables three of tools/disable.sh's safety checks. A reboot clears it. Check that
+#   `dumpsys package <pkg>` answers before disabling anything.
+# - The kernel load average sits near 66 while 319%/400% of CPU is idle: the MStar SoC driver threads
+#   (CEC, DISP, DMX, VMon_Task...) park in uninterruptible-D state and Linux counts them. Not a fault.
+# - No microphone on the panel (no android.hardware.microphone) and an IR remote, so voice would come
+#   from a phone or Nest speaker. That needs katniss: keep it if you use it. This owner does not.
+# - com.google.android.marvin.talkback ships disabled on this unit; it is not listed below.
+# - android.autoinstalls.config.vestel.malin is NOT listed: tools/disable.sh refuses it because the
+#   package declares no permission block at all, so the TV_INPUT_HARDWARE check cannot be evaluated.
+#   It stays enabled here; TVINPUT_ALLOW=1 would force it, which this owner chose not to do.
+# - The stock launcher keeps dead tiles in its favourites row for packages disabled below
+#   (Google Play Movies & TV); cosmetic, and moot once the launcher is replaced.
+
+# --- Vestel telemetry and retail junk ---
+com.vestel.vestelreporter     # Vestel analytics/telemetry uploader; was resident (~10-17 MB)
+fusion.android.tv.demo        # retail/shop demo loops (RetailDisplayVestel); was resident (~4-7 MB)
+com.vestel.tv.speedup         # "SystemSpeedUp" RAM cleaner; costs more than it returns
+com.vestel.tv.eib             # electronic Instruction Book, the on-screen manual (11 MB of help text)
+
+# --- Google services nobody asked for ---
+com.google.android.katniss                   # Assistant + voice search; no mic on this panel (~28-56 MB resident)
+com.google.android.tvrecommendations         # home-screen recommendation rows (~23-27 MB resident)
+com.google.android.feedback                  # crash/feedback uploader to Google
+com.google.android.partnersetup              # RLZ partner-attribution pings, re-armed at boot
+com.google.android.syncadapters.calendar     # calendar sync, on a TV; does not remove the Google account
+com.google.android.videos                    # Google Play Movies & TV storefront
+com.google.android.play.games                # Play Games
+
+# --- MediaTek / Vestel launcher extras ---
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows/channels for the stock launcher (~9 MB resident)
+com.mediatek.wwtv.setupwizard                            # DVB-T channel-scan wizard; owner never uses the tuner
+
+# --- Stock launcher and its screensaver: disable LAST ---
+# tools/disable.sh skips the launcher until another app answers HOME. Run
+# launcher/build-and-install.sh first; it installs the new launcher, confirms it starts, disables
+# this one and moves Home in the right order.
+com.google.android.tvlauncher   # stock launcher (~158-190 MB resident — the single biggest item here)
+com.google.android.backdrop     # ambient photo screensaver (~66-75 MB resident once it has run)

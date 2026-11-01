@@ -1,0 +1,12 @@
+.env
+backup/
+work/
+recovery-*.json
+shots/
+traces/
+bench-results/
+tools/adbkey/
+*.keystore
+node_modules/
+__pycache__/
+tools/venv/
